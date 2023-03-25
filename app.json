@@ -25,6 +25,19 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow access to your camera."
+        }
+      ],
+      [  "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "Allow access to your location."
+      }]
+    ]
   }
 }
+
