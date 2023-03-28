@@ -1,5 +1,6 @@
+import { useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
+import { StyleSheet, SafeAreaView, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddPlace from "./src/screens/AddPlace";
@@ -7,10 +8,36 @@ import AllPlaces from "./src/screens/AllPlaces";
 import IconButton from "./src/components/global/IconButton";
 import { COLORS } from "./styles/styles";
 import Map from "./src/screens/Map";
+import { useEffect, useState } from "react";
+import { initSQLite } from "./utils/database";
+import * as SplashScreen from "expo-splash-screen";
+import PlaceDetails from "./src/screens/PlaceDetails";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [dbInitialized, setDbInitialized] = useState(false);
+
+  useEffect(() => {
+    initSQLite()
+      .then((r) => setDbInitialized(true))
+      .catch((e) => console.error(e));
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (dbInitialized) {
+      await SplashScreen.hideAsync();
+    }
+  }, [dbInitialized]);
+
+  if (!dbInitialized) {
+    return (
+      <SafeAreaView onLayout={onLayoutRootView} style={styles.loader}>
+        <ActivityIndicator size={"large"} color={COLORS.accent500} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <>
       <StatusBar style='dark' />
@@ -48,6 +75,14 @@ export default function App() {
             }}
           />
           <Stack.Screen name='Map' component={Map} />
+
+          <Stack.Screen
+            name='PlaceDetails'
+            component={PlaceDetails}
+            options={{
+              title: "Loading title...",
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>
@@ -55,9 +90,8 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loader: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },

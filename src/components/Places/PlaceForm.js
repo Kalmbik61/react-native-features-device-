@@ -5,8 +5,9 @@ import { COLORS } from "../../../styles/styles";
 import ImageTaker from "./ImageTaker";
 import LocationPicker from "./LocationPicker";
 import OutlineBtn from "../global/OutlineBtn";
+import { Place } from "../../models/place";
 
-export default function PlaceForm() {
+export default function PlaceForm({ onCreatePlaceHandler }) {
   const [title, setTitle] = useState("");
   const [pickedImage, setPickedImage] = useState();
   const [pickedLocation, setPickedLocation] = useState();
@@ -21,7 +22,8 @@ export default function PlaceForm() {
   }, []);
 
   const onFormSubmit = () => {
-    console.log({ title, pickedImage, pickedLocation });
+    const place = new Place(title, pickedImage, pickedLocation);
+    onCreatePlaceHandler(place);
   };
 
   return (
